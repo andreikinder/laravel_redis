@@ -15,9 +15,24 @@ use Illuminate\Support\Facades\Redis;
 |
 */
 
-Route::get('/', function () {
-    $visits =  Redis::incr('visits');
+Route::get('articles/trending', function () {
 
-    //return $visits;
-    return view('welcome')->with('visits', $visits);//['category','author']
+    $trending = Redis::zrevrange('trending_articles', 0, 2);
+
+    $trending = \App\Models\Article::hydrate(
+      array_map('json_decode', $trending)
+    );
+
+    //\App\Models\Article::hydrateFromJsonString($trending );
+
+    return $trending;
+});
+
+
+
+Route::get('articles/{article}', function (\App\Models\Article $article) {
+    Redis::zincrby('trending_articles', 1 , $article->toJson());
+
+    //Redis::zremrangebyrank('trending_articles', 0, -4);
+    return $article;
 });
