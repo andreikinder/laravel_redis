@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Redis;
@@ -14,6 +16,43 @@ use Illuminate\Support\Facades\Redis;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/', function () {
+
+    /*
+    $userStat3 = [
+        'favourites' => 10,
+        'watchLaters' => 5,
+        'completions' => 6,
+    ];
+    Redis::hmset('user.1.stats', $userStat3); */
+
+//    \Illuminate\Support\Facades\Cache::put('foo2', 'bar2', 10);
+//
+//    return \Illuminate\Support\Facades\Cache::get('foo2');
+
+
+
+    //return Cache::store('redis');
+    Cache::put('bar3', 'baz32');
+    $val = Cache::get('bar3');
+
+
+    return $val;
+
+    //return Redis::hgetall('user.1.stats');
+});
+
+Route::get('/user/{id}/stats', function ($id) {
+    return Redis::hgetall("user.{$id}.stats");
+});
+
+
+Route::get('favourite-video', function () {
+    Redis::hincrby('user.1.stats', 'favourites', 1);
+    return redirect('/');
+});
+
 
 Route::get('articles/trending', function () {
 
