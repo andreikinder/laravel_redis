@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +19,12 @@ use Illuminate\Support\Facades\Redis;
 */
 
 
-class CachebleArticles
+interface  Articles{
+
+    public function all();
+}
+
+class CachebleArticles implements Articles
 {
     protected $articles;
 
@@ -36,15 +42,22 @@ class CachebleArticles
 }
 
 
- class Articles
+ class EloquentArticles implements Articles
  {
      public function all(){
           return \App\Models\Article::all();
      }
  }
 
-Route::get('/', function () {
 
- $articles = new CachebleArticles(new Articles);
- return $articles->all();
+App::bind('Articles', function (){
+    return new CachebleArticles(new EloquentArticles);
+});
+
+Route::get('/', function (Articles $articles) {
+
+    return $articles->all();
+    //dd($articles);
+// $articles = new CachebleArticles(new Articles);
+
 });
