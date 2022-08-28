@@ -18,17 +18,33 @@ use Illuminate\Support\Facades\Redis;
 */
 
 
+class CachebleArticles
+{
+    protected $articles;
 
- class Articles {
+    public function __construct($articles)
+    {
+        $this->articles = $articles;
+    }
+    public function all(){
+        return Cache::remember('articles.all', 60*60, function (){
+            return $this->articles->all();
+        });
+
+    }
+
+}
+
+
+ class Articles
+ {
      public function all(){
-         return Cache::remember('articles.all', 60*60, function (){
-             return \App\Models\Article::all();
-         });
-
+          return \App\Models\Article::all();
      }
  }
 
-Route::get('/', function (Articles $articles) {
+Route::get('/', function () {
 
+ $articles = new CachebleArticles(new Articles);
  return $articles->all();
 });
