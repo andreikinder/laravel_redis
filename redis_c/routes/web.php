@@ -19,45 +19,7 @@ use Illuminate\Support\Facades\Redis;
 */
 
 
-interface  Articles{
 
-    public function all();
-}
+Route::get('/', [\App\Http\Controllers\LessonController::class, 'index']);
 
-class CachebleArticles implements Articles
-{
-    protected $articles;
-
-    public function __construct($articles)
-    {
-        $this->articles = $articles;
-    }
-    public function all(){
-        return Cache::remember('articles.all', 60*60, function (){
-            return $this->articles->all();
-        });
-
-    }
-
-}
-
-
- class EloquentArticles implements Articles
- {
-     public function all(){
-          return \App\Models\Article::all();
-     }
- }
-
-
-App::bind('Articles', function (){
-    return new CachebleArticles(new EloquentArticles);
-});
-
-Route::get('/', function (Articles $articles) {
-
-    return $articles->all();
-    //dd($articles);
-// $articles = new CachebleArticles(new Articles);
-
-});
+Route::get('/lesson/{lesson}', [\App\Http\Controllers\LessonController::class, 'show']);
