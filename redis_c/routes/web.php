@@ -17,25 +17,18 @@ use Illuminate\Support\Facades\Redis;
 |
 */
 
-//function remember($key, $minutes, $callback){
-//    if ($value = Redis::get($key)){
-//        return json_decode($value);
-//    }
-//
-//
-//    Redis::setex($key, $minutes,  $value = $callback());
-//
-//
-//    return  $value;
-//}
 
-Route::get('/', function () {
 
-    return Cache::remember('articles.all', 60*60, function (){
-        return \App\Models\Article::all();
-    });
-//    return remember('articles.all', 60 * 60, function (){
-//        return \App\Models\Article::all();
-//    });
+ class Articles {
+     public function all(){
+         return Cache::remember('articles.all', 60*60, function (){
+             return \App\Models\Article::all();
+         });
 
+     }
+ }
+
+Route::get('/', function (Articles $articles) {
+
+ return $articles->all();
 });
